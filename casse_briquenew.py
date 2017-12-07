@@ -109,7 +109,7 @@ class Brique():
             tableau.itemconfigure(brique.id, state=HIDDEN)
         brique.visible=bOui
     def PositionBalle(brique, balle):
-        global tableau, dyBalle
+        global tableau, dyBalle, score
         if not brique.visible:
             return
         dx = abs(brique.position[0] - balle.position[0])
@@ -117,6 +117,10 @@ class Brique():
         if dx<=brique.dimension[0]+balle.rayon and dy<=brique.dimension[1]+balle.rayon:
             brique.Afficher(False)
             dyBalle=-dyBalle
+            score+=1
+            affichageScore.config(text="Score:" + str(score))
+ 
+			
         
 
 # Définition des variables
@@ -124,6 +128,8 @@ dxBalle=4
 dyBalle=-4
 timer=20
 briques=[]
+nbVies=3
+score=0
 bToucheEntree = False
 
 def InitialisationJeu(bReafficherBriques):
@@ -134,6 +140,8 @@ def InitialisationJeu(bReafficherBriques):
     if bReafficherBriques:
         for b in briques: 
             b.Afficher(True)
+        score=0
+        nbVies=3
 
 # Création d'une fonction qui permet de déplacer la plateforme
 def Clavier(event):
@@ -159,7 +167,7 @@ def Clavier(event):
 
 
 def Tic():
-    global dxBalle, dyBalle, briques, plateforme
+    global dxBalle, dyBalle, briques, plateforme, nbVies, score
 
     # Déplace la balle
     balle.deplacer(balle.position[0]+dxBalle, balle.position[1]+dyBalle)
@@ -172,8 +180,17 @@ def Tic():
 
     # Perdu ?
     if balle.position[1] > bordure.dimension[1]:
-        Message("Perdu !")
-        InitialisationJeu(True)
+        if nbVies >= 1:
+            nbVies-=1
+            affichageVies.config(text="Nombre de balles restantes:" + str(nbVies))
+            message = "Encore " + str(str(nbVies)) + " vies"
+            Message(message)
+            InitialisationJeu(False)
+        if nbVies==0:
+            affichageVies.config("Nombre de balles restantes:" + str(nbVies))
+            message = "Perdu ! Score : " + str(score)
+            Message(message)
+            InitialisationJeu(True)
 
     # On relance le timer
     fenetre.after(timer, Tic)
@@ -191,10 +208,16 @@ def Message(msg):
         tableau.update()
     # Efface le message
     tableau.delete(id)
-
+	
 # Initialisation de la zone de dessin
 fenetre=Tk(className='Casse brique')
 tableau=Canvas(fenetre,width=800,height=710)
+
+#On écrit le score et le nombre de vie
+affichageScore = Label(fenetre, text="Score:"+str(score))
+affichageScore.pack()
+affichageVies = Label(fenetre, text="Nombre de balles restantes:"+str(nbVies))
+affichageVies.pack()
 
 # On crée la bordure
 bordure=Bordure(tableau, [800,710])
@@ -218,6 +241,7 @@ plateforme=Plateforme(tableau)
 # On crée la balle
 balle=Balle(tableau)
 tableau.pack()
+
 
 # Attache les évènement clavier à la plateforme
 fenetre.bind('<Key>', Clavier)
