@@ -13,7 +13,7 @@ Your score increments each time you break a Brick.
 
 Here, on the following picture, you can what happens when you miss the Ball. The number of lives decrease. It is written on the screen, in French:
 > You have one remaining life. Press the "Enter" key of your keyboard to start the game.
-![Alt text](breakoutgame.png?raw=true "How the environment of the game looks like")
+![Alt text](breakoutgame1.png?raw=true "How the environment of the game looks like")
 
 
 
